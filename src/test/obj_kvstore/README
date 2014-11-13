@@ -1,0 +1,8 @@
+Linux NVM Library
+
+This is src/test/obj_kvstore/README.
+
+This directory contains key-value store example based on pmemobj.
+
+Run:
+	obj_kvstore file
