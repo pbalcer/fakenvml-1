@@ -3,8 +3,10 @@
 #include <assert.h>
 
 #define PMEM(x) PMEMoid
+#define LEAFS_PER_NODE 127
 
 typedef struct node_s node_t;
+typedef struct iterator_s iterator_t;
 
 struct node_s {
 	PMEM(node_t) leafs[127];
@@ -56,6 +58,21 @@ int kvs_get(PMEMobjpool *pool, const char *key) {
 	return dnode != NULL ? dnode->value : 0;
 }
 
+#define TEST_PAIRS_COUNT 7
+
+struct test_pairs {
+	const char *key;
+	int value;
+} pairs[TEST_PAIRS_COUNT] = {
+	{"AaAaA", 1},
+	{"aAaAa", 2},
+	{"ABCDE", 3},
+	{"abcde", 4},
+	{"123456", 5},
+	{"1234567", 6},
+	{"12345", 7}
+};
+
 int main(int argc, char** argv)
 {
 	START(argc, argv, "obj_kvstore");
@@ -64,18 +81,15 @@ int main(int argc, char** argv)
 		FATAL("usage: %s file", argv[0]);
 
 	PMEMobjpool *pop = pmemobj_pool_open(argv[1]);
-	kvs_set(pop, "AaAaA", 1);
-	assert(kvs_get(pop, "AaAaA") == 1);
-	kvs_set(pop, "aAaAa", 2);
-	assert(kvs_get(pop, "aAaAa") == 2);
-	kvs_set(pop, "ABCDE", 3);
-	assert(kvs_get(pop, "ABCDE") == 3);
-	kvs_set(pop, "abcde", 4);
-	assert(kvs_get(pop, "abcde") == 4);
-	kvs_set(pop, "123456", 5);
-	assert(kvs_get(pop, "123456") == 5);
-	kvs_set(pop, "1234567", 6);
-	assert(kvs_get(pop, "1234567") == 6);
+
+	int i;
+	for (i = 0; i < TEST_PAIRS_COUNT; ++i) {
+		kvs_set(pop, pairs[i].key, pairs[i].value);
+	}
+	for (i = 0; i < TEST_PAIRS_COUNT; ++i) {
+		assert(kvs_get(pop, pairs[i].key) == pairs[i].value);
+	}
+
 	/* all done */
 	pmemobj_pool_close(pop);
 
