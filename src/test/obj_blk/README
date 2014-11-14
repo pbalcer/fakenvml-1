@@ -1,0 +1,8 @@
+Linux NVM Library
+
+This is src/test/obj_blk/README.
+
+This directory contains pmemblk example based on pmemobj.
+
+Run:
+	obj_blk file

@@ -6,10 +6,9 @@
 #define LEAFS_PER_NODE 127
 
 typedef struct node_s node_t;
-typedef struct iterator_s iterator_t;
 
 struct node_s {
-	PMEM(node_t) leafs[127];
+	PMEM(node_t) leafs[LEAFS_PER_NODE];
 	int value;
 };
 
